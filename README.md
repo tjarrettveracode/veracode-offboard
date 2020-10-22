@@ -33,7 +33,7 @@ Otherwise you will need to set environment variables before running `example.py`
 
 Arguments supported include:
 
-* --usernames, -u : list of user names to deactivate
+* --usernames, -u : list of user names to deactivate, separated by spaces
 
 ## NOTES
 
