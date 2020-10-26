@@ -25,11 +25,11 @@ If you have saved credentials as above you can run:
 
     python vcoffboard.py (arguments)
 
-Otherwise you will need to set environment variables before running `example.py`:
+Otherwise you will need to set environment variables:
 
     export VERACODE_API_KEY_ID=<YOUR_API_KEY_ID>
     export VERACODE_API_KEY_SECRET=<YOUR_API_KEY_SECRET>
-    python vcbulkassign.py (arguments)
+    python vcoffboard.py (arguments)
 
 Arguments supported include:
 
