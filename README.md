@@ -34,7 +34,8 @@ Otherwise you will need to set environment variables:
 Arguments supported include:
 
 * --usernames, -u : list of user names to deactivate, separated by spaces
+* --delete (opt): If set, deletes users rather than deactivating. Note that this is not reversible!
 
 ## NOTES
 
-1. The script only deactivates users (by setting the `Active` flag to `False`). It does not delete them.
+1. If `--delete` is not set, this script only deactivates users (by setting the `Active` flag to `False`). It does not delete them.

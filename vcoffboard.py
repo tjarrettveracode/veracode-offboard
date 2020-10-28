@@ -5,7 +5,17 @@ import logging
 import json
 import datetime
 
+import anticrlf
 from veracode_api_py import VeracodeAPI as vapi
+
+log = logging.getLogger(__name__)
+
+def setup_logger():
+    handler = logging.FileHandler('vcoffboard.log', encoding='utf8')
+    handler.setFormatter(anticrlf.LogFormatter('%(asctime)s - %(levelname)s - %(funcName)s - %(message)s'))
+    logger = logging.getLogger(__name__)
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
 
 def creds_expire_days_warning():
     creds = vapi().get_creds()
@@ -22,7 +32,7 @@ def get_user_list(usernames):
         if len(userinfo) == 0:
             errorstring = "No user found with name {}".format(name)
             print(errorstring)
-            logging.info(errorstring)
+            log.warning(errorstring)
             #log
             continue
         userguid = userinfo[0]["user_id"]
@@ -32,22 +42,25 @@ def get_user_list(usernames):
 def deactivate_user(userguid):
     vapi().disable_user(userguid)
     notification = "Deactivated user {}".format(userguid)
-    logging.info(notification)
+    log.info(notification)
 
+    return 1
+
+def delete_user(userguid):
+    vapi().delete_user(userguid)
+    notification = "Deleted user {}".format(userguid)
+    log.info(notification)
     return 1
 
 def main():
     parser = argparse.ArgumentParser(
         description='This script deactivates a list of users in Veracode.')
     parser.add_argument('-u', '--usernames',nargs="+", required=False, help='List of usernames to deactivate.')
+    parser.add_argument('--delete',action='store_true')
     args = parser.parse_args()
 
     usernames = args.usernames
-
-    logging.basicConfig(filename='vcoffboard.log',
-                        format='%(asctime)s - %(levelname)s - %(funcName)s - %(message)s',
-                        datefmt='%m/%d/%Y %I:%M:%S%p',
-                        level=logging.INFO)
+    deleteuser = args.delete
 
     # CHECK FOR CREDENTIALS EXPIRATION
     creds_expire_days_warning()
@@ -57,9 +70,18 @@ def main():
     userguids = get_user_list(usernames)
 
     for guid in userguids:
-        count += deactivate_user(guid)
+        if deleteuser:
+            count += delete_user(guid)
+        else:
+            count += deactivate_user(guid)
 
-    print("Deactivated",count,"users")
+    if deleteuser:
+        action="Deleted"
+    else:
+        action="Deactivated"
+
+    print("{} {} users".format(action,count))
 
 if __name__ == '__main__':
+    setup_logger()
     main()
