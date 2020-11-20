@@ -36,7 +36,6 @@ jobs:
         --file="project.zip" \
         --app_id: "${{secrets.VERACODE_APP_ID}}"
       continue-on-error: true
-    - name: Upload Artifact 
     - uses: actions/upload-artifact@v1
       with:
         name: ScanResults
