@@ -30,7 +30,7 @@ jobs:
     - name: Pipeline Scan
       uses: docker://veracode/pipeline-scan:cmd
       env:
-        DOCKER_USER_OPTION: '0:0'
+        DOCKER_USER_OPTION: '1000:1000'
       with:
         args: --veracode_api_id="${{secrets.VERACODE_API_ID}}" --veracode_api_key="${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file="project.zip" --app_id="${{secrets.VERACODE_APP_ID}}"
       continue-on-error: true
