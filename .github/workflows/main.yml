@@ -28,13 +28,9 @@ jobs:
     
     #  Submit  project to pipeline scan
     - name: Pipeline Scan
-      run: |
-        docker run -it --rm \
-        veracode/pipeline-scan:cmd --veracode_api_id="${{secrets.VERACODE_API_ID}}" \
-        --veracode_api_key="${{secrets.VERACODE_API_KEY}}" \
-        --fail_on_severity="Very High, High" \
-        --file="project.zip" \
-        --app_id: "${{secrets.VERACODE_APP_ID}}"
+      uses: docker://veracode/pipeline-scan:cmd
+      with:
+        args: --veracode_api_id="${{secrets.VERACODE_API_ID}}" --veracode_api_key="${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file="project.zip" --app_id="${{secrets.VERACODE_APP_ID}}"
       continue-on-error: true
     - uses: actions/upload-artifact@v1
       with:
