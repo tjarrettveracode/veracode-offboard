@@ -27,24 +27,31 @@ jobs:
         build-name: project.zip
     
     #  Submit  project to pipeline scan
-    - name: Pipeline Scan       
+    - name: Pipeline Scan
       container: 
         image: veracode/pipeline-scan 
-      steps: 
-        - name: Run Pipeline Scan
-          run: java -jar /opt/veracode/pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file "project.zip" --app_id "${{secrets.VERACODE_APP_ID}}"
+      - name: Run Pipeline Scan
+        run: java -jar /opt/veracode/pipeline-scan.jar
+        with:
+          veracode_api_id: "${{secrets.VERACODE_API_ID}}" 
+          veracode_api_key: "${{secrets.VERACODE_API_KEY}}"
+          fail_on_severity: "Very High, High"
+          file: "project.zip"
+          app_id: "${{secrets.VERACODE_APP_ID}}"
         continue-on-error: true
-        - name: Upload Artifact 
-        - uses: actions/upload-artifact@v1
-          with:
-            name: ScanResults
+      - name: Upload Artifact 
+      - uses: actions/upload-artifact@v1
+        with:
+          name: ScanResults
             path: results.json
-            
+
     # Convert pipeline scan output to SARIF format 
       id: convert
     - uses: veracode/veracode-pipeline-scan-results-to-sarif@master
       with:
         pipeline-results-json: results.json
+        output-results-sarif: veracode-results.sarif
+        finding-rule-level: "4:3:0"
     - uses: github/codeql-action/upload-sarif@v1
       with:
     # Path to SARIF file relative to the root of the repository
