@@ -40,7 +40,7 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: ScanResults
-          path: results.json
+        path: results.json
 
     # Convert pipeline scan output to SARIF format 
       id: convert
