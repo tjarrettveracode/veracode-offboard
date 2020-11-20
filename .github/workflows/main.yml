@@ -19,26 +19,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      
-  # Download and unzip the latest pipeline scan JAR
-    - uses: wei/curl@master
-      with:
-        args: -O https://downloads.veracode.com/securityscan/pipeline-scan-LATEST.zip
-    - run: unzip -o pipeline-scan-LATEST.zip
-    
-
-    - uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
         
-    # zip the project and move it to a staging directory
+  # zip the project and move it to a staging directory
     - name: Zip Project
       run: zip -R project.zip '*.py' '*.js' '*.php' '*.ts'
       env:
         build-name: project.zip
     
-    #  Submit  project to pipeline scan     
-    - run: java -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file "project.zip" --app_id "${{secrets.VERACODE_APP_ID}}"
+    #  Submit  project to pipeline scan
+    - name: Pipeline Scan        
+      uses: docker://veracode/pipeline-scan:cmd
+      with:
+        args:
+        -vid ${{secrets.VERACODE_API_ID}} 
+        -vkey ${{secrets.VERACODE_API_KEY}} 
+        --fail_on_severity="Very High, High" 
+        --file "project.zip" 
+        --app_id "${{secrets.VERACODE_APP_ID}}"
+#    - run: java -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file "project.zip" --app_id "${{secrets.VERACODE_APP_ID}}"
       continue-on-error: true
     - uses: actions/upload-artifact@v1
       with:
