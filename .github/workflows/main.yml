@@ -27,21 +27,19 @@ jobs:
         build-name: project.zip
     
     #  Submit  project to pipeline scan
-    - name: Pipeline Scan        
-      uses: docker://veracode/pipeline-scan:cmd
-      with:
-        args:
-        -  -vid ${{secrets.VERACODE_API_ID}} 
-        -  -vkey ${{secrets.VERACODE_API_KEY}} 
-        -  --fail_on_severity="Very High, High" 
-        -  --file "project.zip" 
-        -  --app_id "${{secrets.VERACODE_APP_ID}}"
-#    - run: java -jar pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file "project.zip" --app_id "${{secrets.VERACODE_APP_ID}}"
-      continue-on-error: true
-    - uses: actions/upload-artifact@v1
-      with:
-        name: ScanResults
-        path: results.json
+    - name: Pipeline Scan       
+      container: 
+        image: veracode/pipeline-scan 
+      steps: 
+        - name: Run Pipeline Scan
+          run: java -jar /opt/veracode/pipeline-scan.jar --veracode_api_id "${{secrets.VERACODE_API_ID}}" --veracode_api_key "${{secrets.VERACODE_API_KEY}}" --fail_on_severity="Very High, High" --file "project.zip" --app_id "${{secrets.VERACODE_APP_ID}}"
+        continue-on-error: true
+        - name: Upload Artifact 
+        - uses: actions/upload-artifact@v1
+          with:
+            name: ScanResults
+            path: results.json
+            
     # Convert pipeline scan output to SARIF format 
       id: convert
     - uses: veracode/veracode-pipeline-scan-results-to-sarif@master
