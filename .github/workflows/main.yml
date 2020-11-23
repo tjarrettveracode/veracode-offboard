@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     container: 
       image: veracode/pipeline-scan:latest
+      options: --user root
 
     steps:
     - name: Retrieve artifact
