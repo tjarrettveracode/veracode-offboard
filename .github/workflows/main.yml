@@ -44,6 +44,7 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: CodePackage
+        path: /github/home
     
     #  Submit  project to pipeline scan
     - name: Pipeline Scan
